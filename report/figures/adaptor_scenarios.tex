@@ -1,0 +1,46 @@
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=0pt,
+    adp1/.style={draw, fill=blue!25, minimum width=1.4cm, minimum height=0.6cm,
+                 font=\small, align=center},
+    adp2/.style={draw, fill=red!25,  minimum width=1.4cm, minimum height=0.6cm,
+                 font=\small, align=center},
+    primer/.style={draw, fill=orange!25, minimum width=2.0cm, minimum height=0.6cm,
+                   font=\small, align=center},
+    ins/.style={draw, fill=green!20, minimum width=2.8cm, minimum height=0.6cm,
+                font=\small, align=center},
+    lbl/.style={font=\small\itshape, anchor=east},
+]
+
+% ---- Scenario A ----
+\node[lbl] at (0, 1.4) {Scenario A:};
+\node[adp1] (a1)   at (1.6,  1.4) {Adp1};
+\node[primer, right=of a1]  (afp)  {Fwd Primer};
+\node[ins,    right=of afp] (ains) {Insert};
+\node[primer, right=of ains](arp)  {Rev Primer$_{RC}$};
+\node[adp1,   right=of arp] (a1rc) {Adp1$_{RC}$};
+\node[font=\small, gray, anchor=west] at ([xshift=6pt]a1rc.east)
+    {same adaptor on both ends $\Rightarrow$ one adaptor sequence needed};
+
+% ---- Scenario B ----
+\node[lbl] at (0, 0) {Scenario B:};
+\node[adp1] (b1)   at (1.6, 0) {Adp1};
+\node[primer, right=of b1]  (bfp)  {Fwd Primer};
+\node[ins,    right=of bfp] (bins) {Insert};
+\node[primer, right=of bins](brp)  {Rev Primer$_{RC}$};
+\node[adp2,   right=of brp] (b2rc) {Adp2$_{RC}$};
+\node[font=\small, anchor=west] at ([xshift=6pt]b2rc.east)
+    {\textbf{different adaptors} $\Rightarrow$ two distinct sequences needed \checkmark};
+
+\end{tikzpicture}%
+}
+\caption{The two possible adaptor configurations for a paired-end amplicon library.
+Scenario~A uses the same adaptor on both ends (one sequence suffices);
+Scenario~B uses two distinct adaptors (two sequences required).
+Since two distinct adaptor sequences (Adp1 $\neq$ Adp2) were provided with this dataset,
+Scenario~B was assumed and subsequently confirmed empirically
+(Appendix~\ref{app:adaptor-scenarios}).}
+\label{fig:adaptor-scenarios}
+\end{figure}

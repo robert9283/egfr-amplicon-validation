@@ -1,0 +1,78 @@
+configfile: "/pipeline/config.yaml"
+
+# Common variables shared across all rule files.
+# Defined here once, before includes, so included files can use them directly.
+DATA      = config["data_dir"]
+RESULTS   = config["results_dir"]
+SAMPLE    = config["sample"]
+R1        = config["read1"]
+R2        = config["read2"]
+BAM       = config["bam"]
+RESOURCES = "/pipeline/resources"
+
+include: "rules/qc.smk"
+include: "rules/mapping.smk"
+include: "rules/variants.smk"
+include: "rules/blast.smk"
+
+# -------------------------------------------------------
+# Target rule: defines the full set of desired outputs
+# -------------------------------------------------------
+rule all:
+    input:
+        # --- Task 1: read constitution (QC + trimming + insert size) ---
+        f"{RESULTS}/qc/raw/{SAMPLE}_R1_fastqc.html",
+        f"{RESULTS}/qc/raw/{SAMPLE}_R2_fastqc.html",
+        f"{RESULTS}/trimmed/{SAMPLE}_R1_trimmed.fastq.gz",
+        f"{RESULTS}/trimmed/{SAMPLE}_R2_trimmed.fastq.gz",
+        f"{RESULTS}/qc/trimmed/{SAMPLE}_R1_trimmed_fastqc.html",
+        f"{RESULTS}/qc/trimmed/{SAMPLE}_R2_trimmed_fastqc.html",
+        f"{RESULTS}/tables/cutadapt_table.tex",
+        f"{RESULTS}/tables/fastqc_table.tex",
+        f"{RESULTS}/tables/per_amplicon_readthrough.tex",
+        f"{RESULTS}/qc/adaptor_check.txt",
+        f"{RESULTS}/tables/adaptor_check_table.tex",
+        f"{RESULTS}/tables/primer_assignment_table.tex",
+        f"{RESULTS}/figures/insert_size_plot.pdf",
+        f"{RESULTS}/tables/primer_vs_ref.tex",
+
+        # --- Tasks 2 & 3: gene region + mapping rate ---
+        f"{RESULTS}/qc/bam_header.txt",
+        f"{RESULTS}/mapping/flagstat.txt",
+        f"{RESULTS}/tables/flagstat_table.tex",
+        f"{RESULTS}/mapping/idxstats.txt",
+        f"{RESULTS}/mapping/unmapped.fastq.gz",
+        f"{RESULTS}/figures/unmapped_read_length_plot.pdf",
+        f"{RESULTS}/tables/unmapped_primer_assignment.tex",
+        f"{RESULTS}/tables/amplicon_unmapped_rate.tex",
+        f"{RESULTS}/tables/blast_amp2_summary.tex",
+        f"{RESULTS}/blast/amp2_vs_phix174.tsv",
+        f"{RESULTS}/tables/gene_region_table.tex",
+        f"{RESULTS}/tables/blast_primer_table.tex",
+        f"{RESULTS}/tables/blast_primer_table_relaxed.tex",
+        f"{RESULTS}/tables/blast_offtarget_table.tex",
+        f"{RESULTS}/tables/amplicon_length_table.tex",
+        f"{RESULTS}/tables/blast_gene_intersect_table.tex",
+        f"{RESULTS}/tables/egfr_exon_table.tex",
+        f"{RESULTS}/tables/primer_properties_table.tex",
+        f"{RESULTS}/figures/egfr_exon_figure.pdf",
+
+        # --- Task 4: amplicon coverage ---
+        f"{RESULTS}/mapping/depth.txt",
+        f"{RESULTS}/tables/on_target_rate.tex",
+        f"{RESULTS}/figures/amplicon_depth_plot.pdf",
+        f"{RESULTS}/figures/coverage_uniformity_plot.pdf",
+
+        # --- Task 5: variant calling (legacy VarScan2) ---
+        f"{RESULTS}/variants/{SAMPLE}_snps.vcf",
+        f"{RESULTS}/variants/{SAMPLE}_indels.vcf",
+
+        # --- Task 5: variant calling (Mutect2 + VarDictJava) ---
+        f"{RESULTS}/variants/mutect2_filtered.vcf.gz",
+        f"{RESULTS}/variants/vardict.vcf",
+
+        # --- Task 5: SnpEff annotation + variant table ---
+        f"{RESULTS}/variants/mutect2_annotated.vcf.gz",
+        f"{RESULTS}/variants/vardict_annotated.vcf",
+        f"{RESULTS}/tables/variant_table.tex",
+        f"{RESULTS}/tables/amplicon_exon_overlap_table.tex",

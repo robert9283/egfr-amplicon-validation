@@ -1,0 +1,85 @@
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=2.4cm,
+    % Data files: rounded gray boxes
+    data/.style={
+        draw, rounded corners=4pt, fill=gray!20,
+        minimum width=2.0cm, minimum height=0.75cm,
+        font=\small\ttfamily, align=center
+    },
+    % QC tools: blue boxes
+    qc/.style={
+        draw, fill=blue!20,
+        minimum width=2.0cm, minimum height=0.75cm,
+        font=\small, align=center
+    },
+    % Preprocessing tools: orange boxes
+    preproc/.style={
+        draw, fill=orange!30,
+        minimum width=2.0cm, minimum height=0.75cm,
+        font=\small, align=center
+    },
+    % Alignment: green boxes
+    aligner/.style={
+        draw, fill=green!25,
+        minimum width=2.0cm, minimum height=0.75cm,
+        font=\small, align=center
+    },
+    lbl/.style={font=\footnotesize\itshape, align=center, text width=2.2cm},
+    arr/.style={-{Stealth[length=6pt]}, thick},
+]
+
+% ---- Nodes ----
+\node[data]    (fastq)    {Raw\\FASTQ};
+\node[qc]      (fqc1)     [right=of fastq]    {FastQC};
+\node[preproc] (cutadapt) [right=of fqc1]     {Cutadapt};
+\node[qc]      (fqc2)     [right=of cutadapt] {FastQC};
+\node[aligner] (aligner)  [right=of fqc2]     {Aligner\\(BWA/STAR)};
+\node[data]    (bam)      [right=of aligner]   {BAM};
+
+% ---- Arrows ----
+\draw[arr] (fastq)    -- (fqc1);
+\draw[arr] (fqc1)     -- (cutadapt);
+\draw[arr] (cutadapt) -- (fqc2);
+\draw[arr] (fqc2)     -- (aligner);
+\draw[arr] (aligner)  -- (bam);
+
+% ---- Labels below each node ----
+\node[lbl, below=0.25cm of fastq]    {input reads};
+\node[lbl, below=0.25cm of fqc1]    {assess quality};
+\node[lbl, below=0.25cm of cutadapt]{trim adaptors\\low-$Q$ bases};
+\node[lbl, below=0.25cm of fqc2]    {confirm\\trimming};
+\node[lbl, below=0.25cm of aligner] {map to\\reference};
+\node[lbl, below=0.25cm of bam]     {aligned reads};
+
+% ---- Legend ----
+\begin{scope}[shift={(0, -2.2)}]
+    \node[data,    minimum width=0.6cm, minimum height=0.45cm] (ld) at (0.3,   0) {};
+    \node[anchor=west, font=\footnotesize] at (0.65, 0) {Data file};
+
+    \node[qc,      minimum width=0.6cm, minimum height=0.45cm] (lq) at (3.2,   0) {};
+    \node[anchor=west, font=\footnotesize] at (3.55, 0) {QC (inspect only)};
+
+    \node[preproc, minimum width=0.6cm, minimum height=0.45cm] (lp) at (7.2,   0) {};
+    \node[anchor=west, font=\footnotesize] at (7.55, 0) {Preprocessing (modifies reads)};
+
+    \node[aligner, minimum width=0.6cm, minimum height=0.45cm] (la) at (12.4,  0) {};
+    \node[anchor=west, font=\footnotesize] at (12.75, 0) {Alignment};
+\end{scope}
+
+\end{tikzpicture}%
+}% end resizebox
+\caption{Typical NGS preprocessing pipeline before alignment.
+\textbf{FastQC} (blue) is a quality control tool --- it inspects and reports read
+quality but does not modify any data.
+\textbf{Cutadapt} (orange) is a \emph{preprocessing} tool --- its primary purpose
+is to remove adaptor sequences and trim low-quality bases \emph{before alignment},
+so that the aligner receives clean reads and produces accurate mappings.
+A second FastQC run after trimming confirms that the cleaning was successful.
+In this dataset the BAM file was provided pre-aligned, so Cutadapt was run
+retrospectively on the raw FASTQs to confirm adaptor presence and measure
+insert size, rather than as a mandatory preprocessing step before mapping.}
+\label{fig:ngs-pipeline}
+\end{figure}

@@ -1,0 +1,58 @@
+# -------------------------------------------------------
+# Paths (mapped as Docker volumes in run.sh)
+# -------------------------------------------------------
+data_dir: /data
+results_dir: /results
+
+# -------------------------------------------------------
+# Sample
+# -------------------------------------------------------
+sample: aln
+read1: aln1.fastq.gz
+read2: aln2.fastq.gz
+bam: aln.bam
+
+# -------------------------------------------------------
+# Sequences (from task PDF)
+# Source: DataScientist-Test-2026.pdf (provided with the task)
+# These are custom adaptor sequences specific to this library preparation.
+# They are NOT standard Illumina TruSeq/Nextera adaptors.
+# Verify these match your library prep kit before reusing this pipeline
+# on a different dataset.
+# -------------------------------------------------------
+adaptor1: AAGACTCGGCAGCATCTCCA  # ligated to 5' end of insert; R1 is primed from this end
+adaptor2: GCGATCGTCACTGTTCTCCA  # ligated to 3' end of insert; R2 is primed from this end
+
+# Sequences to trim from each read on read-through (verified by check_adaptors.py):
+#   R1 reads through the insert → hits RC of Adaptor2 at its 3' end
+#   R2 reads through the insert → hits RC of Adaptor1 at its 3' end
+# These are the sequences passed to cutadapt -a (R1) and -A (R2).
+trim_r1: TGGAGAACAGTGACGATCGC  # RC of Adaptor2; dominant in R1 (4.8% of reads)
+trim_r2: TGGAGATGCTGCCGAGTCTT  # RC of Adaptor1; dominant in R2 (5.3% of reads)
+
+# Each forward/reverse pair defines one amplicon (4 amplicons total).
+# Source: DataScientist-Test-2026.pdf
+primers:
+  forward:
+    - TTGCCAGTTAACGTCTTCCTTCTCTCTCTG  # amplicon 1
+    - CCCTTGTCTCTGTGTTCTTGTCCCCCCCA   # amplicon 2
+    - TGATCTGTCCCTCACAGCAGGGTCTTCTCT  # amplicon 3
+    - CACACTGACGTGCCTCTCCCTCCCTCCA    # amplicon 4
+  reverse:
+    - GAGAAAAGGTGGGCCTGAGGTTCAGAGCCA  # amplicon 1
+    - CCCCACCAGACCATGAGAGGCCCTGCGGCC  # amplicon 2
+    - TGACCTAAAGCCACCTCCTTA           # amplicon 3
+    - CCGTATCTCCCTTCCCTGATTA          # amplicon 4
+
+# -------------------------------------------------------
+# Tool parameters
+# -------------------------------------------------------
+cutadapt:
+  min_length: 20       # discard reads shorter than this after trimming
+  quality_cutoff: 20   # trim low-quality bases from 3' end
+
+samtools:
+  min_base_quality: 20  # for depth calculation
+
+bedtools:
+  min_amplicon_depth: 10000  # minimum per-base depth to retain a covered interval (filters scattered noise reads)

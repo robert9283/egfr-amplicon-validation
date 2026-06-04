@@ -1,0 +1,89 @@
+% TKI treatment decision tree based on EGFR panel result.
+% Included via \input{figures/tki_decision_tree} inside a figure environment.
+
+\begin{tikzpicture}[
+  node distance = 0.6cm and 1.8cm,
+  % Styles
+  start/.style   = {rectangle, draw=black!70, very thick, fill=gray!12,
+                    rounded corners=4pt, align=center, font=\small\bfseries,
+                    minimum width=4cm, minimum height=0.9cm},
+  decision/.style = {diamond, draw=black!60, thick, fill=blue!8,
+                    align=center, font=\small, inner sep=1pt,
+                    aspect=2.2},
+  result/.style   = {rectangle, draw=black!40, thick, fill=white,
+                    rounded corners=3pt, align=center, font=\small,
+                    minimum width=3.8cm, minimum height=0.85cm},
+  treat/.style    = {rectangle, draw=teal!70!black, very thick,
+                    fill=teal!10, rounded corners=4pt, align=center,
+                    font=\small\bfseries,
+                    minimum width=3.8cm, minimum height=0.85cm},
+  notreat/.style  = {rectangle, draw=gray!60, thick, fill=gray!8,
+                    rounded corners=4pt, align=center, font=\small,
+                    minimum width=3.8cm, minimum height=0.85cm},
+  arrow/.style    = {->, >=Stealth, thick, draw=black!60},
+  lbl/.style      = {font=\footnotesize\itshape, fill=white,
+                    inner sep=1pt},
+]
+
+%% ── Nodes ──────────────────────────────────────────────────────────────────
+
+% Root
+\node[start] (panel) {EGFR panel result};
+
+% Decision 1: mutation detected?
+\node[decision, below=1.0cm of panel] (mut_q)
+      {Mutation\\detected?};
+
+% Left branch: no mutation
+\node[notreat, below left=1.2cm and 2.8cm of mut_q] (no_mut)
+      {No EGFR mutation\\Not eligible for TKI};
+
+% Right branch: mutation detected → which type?
+\node[decision, below right=1.2cm and 2.8cm of mut_q] (type_q)
+      {Mutation\\type?};
+
+% Sensitising branch (left of type_q)
+\node[result, below left=1.4cm and 2.2cm of type_q] (sensitising)
+      {Sensitising mutation\\E746\_A750del, L858R,\\or G719X};
+
+% T790M branch (right of type_q)
+\node[result, below right=1.4cm and 2.2cm of type_q] (t790m_node)
+      {T790M\\(acquired resistance\\after prior TKI)};
+
+% Treatment: sensitising → further question: naïve vs resistant?
+\node[decision, below=1.1cm of sensitising] (naive_q)
+      {Prior TKI\\therapy?};
+
+\node[treat, below left=1.1cm and 1.5cm of naive_q] (osi_first)
+      {Osimertinib\\(1st-line preferred)};
+
+\node[result, below right=1.1cm and 1.5cm of naive_q] (check_t790m)
+      {Check for\\T790M on\\repeat biopsy};
+
+% Treatment: T790M → osimertinib
+\node[treat, below=1.1cm of t790m_node] (osi_switch)
+      {Switch to\\osimertinib};
+
+% Treatment after repeat biopsy
+\node[treat,  below=1.1cm of check_t790m] (osi_if)
+      {Osimertinib\\if T790M confirmed};
+
+%% ── Arrows ─────────────────────────────────────────────────────────────────
+
+\draw[arrow] (panel)    -- (mut_q);
+
+\draw[arrow] (mut_q)    -| node[lbl, above, pos=0.25] {No}  (no_mut);
+\draw[arrow] (mut_q)    -| node[lbl, above, pos=0.25] {Yes} (type_q);
+
+\draw[arrow] (type_q)   -| node[lbl, above, pos=0.2] {Sensitising} (sensitising);
+\draw[arrow] (type_q)   -| node[lbl, above, pos=0.2] {T790M}       (t790m_node);
+
+\draw[arrow] (sensitising) -- (naive_q);
+
+\draw[arrow] (naive_q)  -| node[lbl, above, pos=0.25] {No}  (osi_first);
+\draw[arrow] (naive_q)  -| node[lbl, above, pos=0.25] {Yes} (check_t790m);
+
+\draw[arrow] (t790m_node) -- (osi_switch);
+\draw[arrow] (check_t790m)  -- (osi_if);
+
+\end{tikzpicture}

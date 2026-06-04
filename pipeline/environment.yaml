@@ -1,0 +1,16 @@
+name: base
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - snakemake-minimal=7.32.4
+  - fastqc=0.12.1
+  - pip
+  - samtools=1.19.2
+  - varscan=2.4.6
+  - bedtools=2.31.1
+  - gatk4=4.5.0.0
+  - vardict-java=1.8.3
+  - snpeff=5.2

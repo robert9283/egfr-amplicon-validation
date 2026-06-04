@@ -1,0 +1,57 @@
+\begin{tcolorbox}[
+  title={\textbf{Box 2: How BLAST works}},
+  colback=orange!3!white, colframe=orange!50!black,
+  fonttitle=\small\bfseries,
+  left=6pt, right=6pt, top=4pt, bottom=4pt
+]
+
+\textbf{What is BLAST?}
+BLAST (Basic Local Alignment Search Tool) finds regions of local similarity between
+a query sequence and a database of target sequences. Given a short query (e.g.\ a
+20--30\,bp primer), it returns the genomic positions where that sequence occurs with
+high identity, along with statistical confidence scores.
+
+\medskip
+\textbf{The three key steps:}
+
+\begin{enumerate}
+  \item \textbf{Word seeding.} BLAST breaks the query into short overlapping
+    \emph{words} of length $w$ (here $w=7$). It looks up each word in a pre-built
+    index of the database, finding positions where an exact or near-exact match
+    exists. This is fast because the index is built once from the reference (the
+    \texttt{makeblastdb} step).
+
+  \item \textbf{Extension.} Each seed hit is extended in both directions without
+    gaps, then with gaps, to build the best possible local alignment (a
+    \emph{High-scoring Segment Pair}, HSP). Extension stops when the alignment
+    score drops too far below the running maximum.
+
+  \item \textbf{Statistical scoring.} The alignment is assigned an
+    \textbf{E-value} (Expect value): the number of alignments with this score or
+    better that would be expected by chance in a database of this size. A small
+    E-value (e.g.\ $10^{-8}$) means the hit is very unlikely to be random.
+    For a 30\,bp perfect match against a 3\,Gbp genome the E-value is $\sim\!10^{-8}$.
+\end{enumerate}
+
+\medskip
+\textbf{Parameters used here:}
+\begin{itemize}
+  \item \texttt{-task blastn-short}: preset for sequences $<$50\,bp --- lowers the
+    word size and adjusts gap penalties for short queries.
+  \item \texttt{-word\_size 7}: seed length. Standard \texttt{blastn} uses 11,
+    which would miss most primer-length matches.
+  \item \texttt{-perc\_identity 90}: only report hits where $\geq$90\% of aligned
+    bases match --- filters spurious low-identity hits.
+  \item \texttt{-max\_target\_seqs 1}: report only the single best hit per primer,
+    giving the primary binding site.
+\end{itemize}
+
+\medskip
+\textbf{Strand handling.} A forward primer binds the plus strand; BLAST reports
+\texttt{sstrand = plus} and \texttt{sstart $<$ send}. A reverse primer binds the
+minus strand (its sequence is given 5'$\to$3', which is the reverse complement of
+the plus strand); BLAST reports \texttt{sstrand = minus} and \texttt{sstart $>$ send}.
+The amplicon span is therefore: $[\,\text{fwd sstart},\;\text{rev sstart}\,]$
+(taking the larger coordinate for the reverse primer).
+
+\end{tcolorbox}
