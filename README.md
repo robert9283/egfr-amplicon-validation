@@ -150,9 +150,3 @@ developed with the assistance of Claude (Anthropic), an AI language model. All o
 were reviewed, validated, and approved by the author. The analytical decisions,
 interpretations, and conclusions are the author's own.
 
-## AI Assistance Disclosure
-
-Portions of the code, analysis scripts, and written report in this repository were
-developed with the assistance of Claude (Anthropic), an AI language model. All outputs
-were reviewed, validated, and approved by the author. The analytical decisions,
-interpretations, and conclusions are the author's own.
