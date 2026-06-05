@@ -142,3 +142,17 @@ bash pipeline/run.sh --cores 4 --forceall
 | VarScan2 | 2.4.6 | Somatic variant calling |
 | SnpEff | 5.1 | Variant annotation |
 | Snakemake | 7.32.4 | Workflow management |
+
+## AI Assistance Disclosure
+
+Portions of the code, analysis scripts, and written report in this repository were
+developed with the assistance of Claude (Anthropic), an AI language model. All outputs
+were reviewed, validated, and approved by the author. The analytical decisions,
+interpretations, and conclusions are the author's own.
+
+## AI Assistance Disclosure
+
+Portions of the code, analysis scripts, and written report in this repository were
+developed with the assistance of Claude (Anthropic), an AI language model. All outputs
+were reviewed, validated, and approved by the author. The analytical decisions,
+interpretations, and conclusions are the author's own.
